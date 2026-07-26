@@ -134,6 +134,10 @@ sound:
     outgoing:
       sound: null
 
+# Allow sending private messages to yourself.
+# When false, the errors.message-yourself message is shown.
+allow-message-yourself: false
+
 # Error messages
 errors:
     # No permission
@@ -184,7 +188,3 @@ errors:
 
     # Trying to message a team, but not in one
     not-in-team: <red>(!) You are not in a team.</red>
-
-# Allow players to send private messages to themselves.
-# When false, the errors.message-yourself message is shown instead.
-allow-message-yourself: false
