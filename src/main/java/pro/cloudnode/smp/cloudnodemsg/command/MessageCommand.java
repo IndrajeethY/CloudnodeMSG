@@ -9,7 +9,6 @@ import pro.cloudnode.smp.cloudnodemsg.CloudnodeMSG;
 import pro.cloudnode.smp.cloudnodemsg.Message;
 import pro.cloudnode.smp.cloudnodemsg.Permissions;
 import pro.cloudnode.smp.cloudnodemsg.error.InvalidPlayerError;
-import pro.cloudnode.smp.cloudnodemsg.error.MessageYourselfError;
 import pro.cloudnode.smp.cloudnodemsg.error.NoPermissionError;
 import pro.cloudnode.smp.cloudnodemsg.error.PlayerHasIncomingDisabledError;
 import pro.cloudnode.smp.cloudnodemsg.error.PlayerNotFoundError;
@@ -33,8 +32,6 @@ public final class MessageCommand extends Command {
 
         final @NotNull Optional<@NotNull Player> recipient = Optional.ofNullable(CloudnodeMSG.getInstance().getServer()
                 .getPlayer(args[0]));
-        if (sender instanceof final @NotNull Player player && recipient.isPresent() && recipient.get().getUniqueId().equals(player.getUniqueId()))
-            return new MessageYourselfError().send(sender);
         if (args.length == 1) {
             final @NotNull Player player = (Player) sender;
             if (Message.hasChannel(player)) {
