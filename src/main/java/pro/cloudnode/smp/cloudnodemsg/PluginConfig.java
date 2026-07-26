@@ -418,6 +418,14 @@ public final class PluginConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("errors.message-yourself")));
     }
 
+    /**
+     * Whether players are allowed to send private messages to themselves.
+     * When {@code false}, the {@link #messageYourself()} error is shown instead.
+     */
+    public boolean allowMessageYourself() {
+        return config.getBoolean("allow-message-yourself", false);
+    }
+
     public @NotNull Component nobodyReply() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("errors.nobody-reply")));
     }
