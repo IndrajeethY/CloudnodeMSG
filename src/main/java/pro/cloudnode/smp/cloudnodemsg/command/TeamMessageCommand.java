@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pro.cloudnode.smp.cloudnodemsg.CloudnodeMSG;
 import pro.cloudnode.smp.cloudnodemsg.Message;
-import pro.cloudnode.smp.cloudnodemsg.Permission;
+import pro.cloudnode.smp.cloudnodemsg.Permissions;
+import pro.cloudnode.smp.cloudnodemsg.PluginConfig;
 import pro.cloudnode.smp.cloudnodemsg.error.NoPermissionError;
 import pro.cloudnode.smp.cloudnodemsg.error.NotInTeamError;
 import pro.cloudnode.smp.cloudnodemsg.error.NotPlayerError;
@@ -20,7 +21,7 @@ import java.util.Optional;
 public class TeamMessageCommand extends Command {
     @Override
     public boolean run(final @NotNull CommandSender sender, final @NotNull String label, final @NotNull String @NotNull [] args) {
-        if (!sender.hasPermission(Permission.USE_TEAM)) return new NoPermissionError().send(sender);
+        if (!sender.hasPermission(Permissions.USE_TEAM)) return new NoPermissionError().send(sender);
         if (!(sender instanceof final @NotNull Player player)) return new NotPlayerError().send(sender);
         final @NotNull Optional<@NotNull Team> team = Optional.ofNullable(player.getScoreboard().getPlayerTeam(player));
         if (team.isEmpty()) return new NotInTeamError().send(player);
@@ -48,12 +49,24 @@ public class TeamMessageCommand extends Command {
      * Send message to online team members
      */
     public static boolean sendTeamMessage(final @NotNull Player sender, final @NotNull Team team, final @NotNull Component message) {
+        CloudnodeMSG.getInstance()
+                .config()
+                .sound(PluginConfig.SoundEvent.TEAM_OUTGOING)
+                .ifPresent(sound -> sound.play(sender));
+
         for (final @NotNull Player player : sender.getServer().getOnlinePlayers()) {
+            if (!sender.getUniqueId().equals(player.getUniqueId())) {
+                CloudnodeMSG.getInstance()
+                        .config()
+                        .sound(PluginConfig.SoundEvent.TEAM_INCOMING)
+                        .ifPresent(sound -> sound.play(player));
+            }
+
             if (Message.isIgnored(player, sender)) continue;
             if (Optional.ofNullable(player.getScoreboard().getPlayerTeam(player)).map(t -> t.equals(team))
                     .orElse(false))
                 sendMessage(player, CloudnodeMSG.getInstance().config().team(sender.getName(), team, message));
-            else if (player.hasPermission(Permission.SPY))
+            else if (player.hasPermission(Permissions.SPY))
                 sendMessage(player, CloudnodeMSG.getInstance().config().teamSpy(sender.getName(), team, message));
         }
         sender.getServer().getConsoleSender()
